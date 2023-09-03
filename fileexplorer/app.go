@@ -2,11 +2,15 @@ package main
 
 import (
 	"context"
+	//"fmt"
+	"path"
 
 	"github.com/danielpaulus/go-ios/ios"
 	"github.com/luc-git/go-ios/ios/afc"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
+
+var afcconnection *afc.Connection
 
 // App struct
 type App struct {
@@ -22,18 +26,44 @@ func NewApp() *App {
 // so we can call the runtime methods
 func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
-	runtime.EventsOn(ctx, "refresh", func(optionalData ...interface{})  {
+	runtime.EventsOn(ctx, "refresh", func(optionalData ...interface{}) {
 		a.NewAfc(ctx)
 	})
 }
 
 // Greet returns a greeting for the given name
 func (a *App) NewAfc(ctx context.Context) {
-	idevice, err := ios.GetDevice("")
-	if err != nil {
-		runtime.EventsEmit(ctx, "idevice", err.Error())
+	if (afcconnection != nil){
+		runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 		return
 	}
-	afc.New(idevice)
-	runtime.EventsEmit(ctx, "idevice", "idevice found")
+	idevice, err := ios.GetDevice("")
+	if err != nil {
+		runtime.EventsEmit(ctx, "idevice", err.Error(), false)
+		return
+	}
+	afcconnection, err = afc.New(idevice)
+	if err != nil {
+		return
+	}
+	runtime.EventsEmit(ctx, "idevice", "idevice found", true)
+	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
+		getFiles(afcconnection, ctx)
+	})
+}
+
+func getFiles(afcconnection *afc.Connection, ctx context.Context) {
+	files, err := afcconnection.ListFiles(".", "*")
+	if err != nil {
+		return
+	}
+	for _, f := range files {
+		stat, err := afcconnection.Stat(path.Join("./", f))
+		if err != nil {
+			continue
+		}
+		if stat.IsDir() {
+			runtime.EventsEmit(ctx, "directories", f)
+		}
+	}
 }

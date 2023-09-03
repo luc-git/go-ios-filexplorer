@@ -1,0 +1,28 @@
+#folder-img{
+    width: 84px;
+    height: 67px;
+    margin-bottom: 20px;
+}
+
+#folder-div{
+    margin-right: 11px;
+    margin-left: 11px;
+    margin-top: 14px;
+}
+
+p{
+    overflow-wrap: break-word;
+    width: 84px;
+    font-size: 10px;
+    color: black;
+    text-align: center;
+}
+
+#dirflex {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+html body{
+    background-color: white;
+}
