@@ -54,7 +54,7 @@ func (a *App) NewAfc(ctx context.Context) {
 
 func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...interface{}) {
 	files, err := afcconnection.ListFiles(iospath[0].(string), "*")
-	
+
 	fmt.Printf(iospath[0].(string) + "\n")
 	if err != nil {
 		fmt.Printf(err.Error())

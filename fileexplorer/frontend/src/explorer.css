@@ -1,23 +1,23 @@
-#folder-img{
+#folder-img {
     width: 84px;
     height: 67px;
 }
 
-#folder-div{
+#folder-div {
     margin-right: 11px;
     margin-left: 11px;
     margin-top: 14px;
 }
 
-#folder-div:hover{
+#folder-div:hover {
     background-color: #E5F3FF;
 }
 
-#folder-div:active{
+#folder-div:active {
     background-color: #CCE8FF;
 }
 
-p{
+p {
     overflow-wrap: break-word;
     width: 84px;
     font-size: 10px;
@@ -30,6 +30,6 @@ p{
     flex-wrap: wrap;
 }
 
-html body{
+html body {
     background-color: white;
 }
