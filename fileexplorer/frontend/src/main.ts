@@ -1,7 +1,7 @@
 import './style.css';
 import './app.css';
 
-import {EventsEmit, EventsOn} from '../wailsjs/runtime'
+import {EventsEmit, EventsOn} from '../wailsjs/runtime/runtime'
 
 // Setup the greet function
     EventsOn("idevice", (state, success) => {
@@ -11,10 +11,37 @@ import {EventsEmit, EventsOn} from '../wailsjs/runtime'
         }
     })
 
-    EventsOn("directories", (f) => {
-        document.getElementById("dirflex")!.innerHTML += 
-        "<div id='folder-div' width='105px' height='116px'> <img id='folder-img' src='../images/folder.png'/> <p>" + f + "</p> </div>"
-        console.log("hizzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz")
+    EventsOn("directories", (f, isdir) => {
+            var folder = document.getElementById("dirflex") as HTMLElement
+            var img = document.createElement("img");
+            img.id = "folder-img"
+
+            var filename = document.createElement("p")
+            filename.innerText = f
+            var folderdiv = document.createElement("div")
+            if (isdir){
+                img.src = "../images/folder.svg";
+                folderdiv.setAttribute("isdir", "true")
+            }
+            else{
+                img.src = "../images/file-earmark.svg";
+                folderdiv.setAttribute("isdir", "false")
+            }
+            folderdiv.id = "folder-div"
+            folder.appendChild(folderdiv)
+            folderdiv.appendChild(img)
+            folderdiv.appendChild(filename)
+            
+            
+            for (let index = 0; index < folder.childElementCount; index++) {
+                (folder.children[index] as HTMLElement).addEventListener("dblclick", () => {
+                    console.log(folder.getElementsByTagName("p")[index].textContent)
+                    if (folder.children[index].getAttribute("isdir") == "true"){
+                        EventsEmit("getfiles", folder.getElementsByTagName("p")[index].textContent)
+                        document.getElementById("dirflex")!.innerHTML = ""
+                    }
+                })
+            }
     })
 
     document.getElementById("refreshbutton")?.addEventListener("click", () => {
@@ -29,5 +56,5 @@ import {EventsEmit, EventsOn} from '../wailsjs/runtime'
             .then(data => {
                 document.body.innerHTML = data;
             });
-        EventsEmit("getfiles")
+        EventsEmit("getfiles", "./")
     })

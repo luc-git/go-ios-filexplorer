@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	//"fmt"
+	"fmt"
 	"path"
 
 	"github.com/danielpaulus/go-ios/ios"
@@ -33,7 +33,7 @@ func (a *App) startup(ctx context.Context) {
 
 // Greet returns a greeting for the given name
 func (a *App) NewAfc(ctx context.Context) {
-	if (afcconnection != nil){
+	if afcconnection != nil {
 		runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 		return
 	}
@@ -48,22 +48,29 @@ func (a *App) NewAfc(ctx context.Context) {
 	}
 	runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
-		getFiles(afcconnection, ctx)
+		getFiles(afcconnection, ctx, optionalData...)
 	})
 }
 
-func getFiles(afcconnection *afc.Connection, ctx context.Context) {
-	files, err := afcconnection.ListFiles(".", "*")
+func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...interface{}) {
+	files, err := afcconnection.ListFiles(iospath[0].(string), "*")
+	
+	fmt.Printf(iospath[0].(string) + "\n")
 	if err != nil {
+		fmt.Printf(err.Error())
 		return
 	}
 	for _, f := range files {
-		stat, err := afcconnection.Stat(path.Join("./", f))
+		fmt.Printf(path.Join(iospath[0].(string), f))
+		stat, err := afcconnection.Stat(path.Join(iospath[0].(string), f))
 		if err != nil {
+			fmt.Printf(err.Error())
 			continue
 		}
 		if stat.IsDir() {
-			runtime.EventsEmit(ctx, "directories", f)
+			runtime.EventsEmit(ctx, "directories", f, true)
+		} else {
+			runtime.EventsEmit(ctx, "directories", f, false)
 		}
 	}
 }

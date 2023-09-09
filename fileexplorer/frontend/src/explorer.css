@@ -1,13 +1,20 @@
 #folder-img{
     width: 84px;
     height: 67px;
-    margin-bottom: 20px;
 }
 
 #folder-div{
     margin-right: 11px;
     margin-left: 11px;
     margin-top: 14px;
+}
+
+#folder-div:hover{
+    background-color: #E5F3FF;
+}
+
+#folder-div:active{
+    background-color: #CCE8FF;
 }
 
 p{
