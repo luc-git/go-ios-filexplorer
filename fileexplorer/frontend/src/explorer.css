@@ -23,6 +23,8 @@ p {
     font-size: 10px;
     color: black;
     text-align: center;
+    pointer-events: none;
+    user-select: none;
 }
 
 #dirflex {
@@ -32,4 +34,9 @@ p {
 
 html body {
     background-color: white;
+}
+
+img {
+    pointer-events: none;
+    user-select: none;
 }

@@ -17,6 +17,7 @@ EventsOn("directories", (f, isdir) => {
     img.id = "folder-img"
 
     var filename = document.createElement("p")
+    filename.id = "filename"
     filename.innerText = f
     var folderdiv = document.createElement("div")
     if (isdir) {
@@ -31,16 +32,12 @@ EventsOn("directories", (f, isdir) => {
     folder.appendChild(folderdiv)
     folderdiv.appendChild(img)
     folderdiv.appendChild(filename)
-
-
-    for (let index = 0; index < folder.childElementCount; index++) {
-        (folder.children[index] as HTMLElement).addEventListener("dblclick", () => {
-            console.log(folder.getElementsByTagName("p")[index].textContent)
-            if (folder.children[index].getAttribute("isdir") == "true") {
-                EventsEmit("getfiles", folder.getElementsByTagName("p")[index].textContent)
-                document.getElementById("dirflex")!.innerHTML = ""
-            }
-        })
+    folderdiv.ondblclick = function (e) {
+        if ((e.target as HTMLElement).getAttribute("isdir") == "true") {
+            EventsEmit("getfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
+            document.getElementById("dirflex")!.innerHTML = ""
+            console.log((e.target as HTMLElement).querySelector("p")?.innerText);
+        }
     }
 })
 
