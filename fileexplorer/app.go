@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"path"
+	"strings"
 
 	"github.com/danielpaulus/go-ios/ios"
 	"github.com/luc-git/go-ios/ios/afc"
@@ -11,6 +12,8 @@ import (
 )
 
 var afcconnection *afc.Connection
+
+var completepath []string
 
 // App struct
 type App struct {
@@ -33,6 +36,7 @@ func (a *App) startup(ctx context.Context) {
 
 // Greet returns a greeting for the given name
 func (a *App) NewAfc(ctx context.Context) {
+	completepath = make([]string, 0)
 	if afcconnection != nil {
 		runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 		return
@@ -53,18 +57,24 @@ func (a *App) NewAfc(ctx context.Context) {
 }
 
 func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...interface{}) {
-	files, err := afcconnection.ListFiles(iospath[0].(string), "*")
+	if iospath[0].(string) == ".." {
+		completepath = completepath[:len(completepath)-1]
+	} else {
+		completepath = append(completepath, iospath[0].(string)+"/")
+	}
+	files, err := afcconnection.ListFiles(strings.Join(completepath, ""), "*")
 
-	fmt.Printf(iospath[0].(string) + "\n")
+	fmt.Println(strings.Join(completepath, ""))
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
 	}
 	for _, f := range files {
-		fmt.Printf(path.Join(iospath[0].(string), f))
-		stat, err := afcconnection.Stat(path.Join(iospath[0].(string), f))
+		stat, err := afcconnection.Stat(path.Join(strings.Join(completepath, ""), f))
 		if err != nil {
 			fmt.Printf(err.Error())
+			continue
+		} else if f == "." {
 			continue
 		}
 		if stat.IsDir() {
@@ -72,5 +82,11 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...int
 		} else {
 			runtime.EventsEmit(ctx, "directories", f, false)
 		}
+	}
+}
+
+func (a *App) shutdown(ctx context.Context) {
+	if afcconnection != nil {
+		afcconnection.Close()
 	}
 }

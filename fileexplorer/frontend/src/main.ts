@@ -53,5 +53,5 @@ document.getElementById("accessbutton")?.addEventListener("click", () => {
         .then(data => {
             document.body.innerHTML = data;
         });
-    EventsEmit("getfiles", "./")
+    EventsEmit("getfiles", ".")
 })
