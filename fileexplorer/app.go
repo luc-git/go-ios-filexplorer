@@ -71,8 +71,9 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...int
 	}
 	for _, f := range files {
 		stat, err := afcconnection.Stat(path.Join(strings.Join(completepath, ""), f))
+		//fmt.Printf("files: " + f + "\n")
 		if err != nil {
-			fmt.Printf(err.Error())
+			fmt.Printf(err.Error() + " HEREEEE " + f + "\n")
 			continue
 		} else if f == "." {
 			continue
