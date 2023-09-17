@@ -6,6 +6,10 @@ import { EventsEmit, EventsOn } from '../wailsjs/runtime/runtime'
 let selecteditem: HTMLElement
 let lastselecteditem: HTMLElement
 
+window.addEventListener("contextmenu", (e) => {
+    e.preventDefault()
+})
+
 // Setup the greet function
 EventsOn("idevice", (state, success) => {
     document.getElementById("result")!.innerText = state
@@ -74,6 +78,16 @@ EventsOn("directories", (f, isdir) => {
                 }
             })
         }
+        document.getElementById("contextmenu")!.hidden = true
+    }
+    folderdiv.oncontextmenu = function (e) {
+        let dropdown = document.getElementById("contextmenu")
+        dropdown!.hidden = false
+        dropdown!.style.left = String(e.x + 5) + "px"
+        dropdown!.style.top = String(e.y + 5) + "px";
+        if (!document.querySelectorAll(".selected").item(0)) {
+            (e.target as HTMLElement).classList.add("selected")
+        }
     }
 })
 
@@ -93,8 +107,20 @@ document.onclick = function (e) {
     if ((e.target as HTMLElement).id == "folder-div") {
         return
     }
+    document.getElementById("contextmenu")!.hidden = true
+    if ((e.target as HTMLElement).id == "contextmenuitem") {
+        EventsEmit("copyto", document.querySelectorAll(".selected").item(0).querySelector("p")?.innerText, 0)
+        return
+    }
     unselectelements()
 }
+
+EventsOn("copyfinished", (index) => {
+    if (index > document.querySelectorAll(".selected").length) {
+        return
+    }
+    EventsEmit("copyto", document.querySelectorAll(".selected").item(index++).querySelector("p")?.innerText, index++)
+})
 
 document.getElementById("refreshbutton")?.addEventListener("click", () => {
     EventsEmit("refresh")

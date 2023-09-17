@@ -15,6 +15,8 @@ var afcconnection *afc.Connection
 
 var completepath []string
 
+var dstpath string
+
 // App struct
 type App struct {
 	ctx context.Context
@@ -54,6 +56,31 @@ func (a *App) NewAfc(ctx context.Context) {
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
 		getFiles(afcconnection, ctx, optionalData...)
 	})
+	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
+		copyIos(ctx, optionalData...)
+	})
+}
+
+func copyIos(ctx context.Context, iospath ...interface{}) { 
+	var err error
+	fmt.Print(iospath[1])
+	if iospath[1].(float64) == 0 {
+		fmt.Printf("HELLOOOOOOOO")
+		dstpath, err = runtime.OpenDirectoryDialog(ctx, runtime.OpenDialogOptions{
+			Title: "copy to",
+		})
+		fmt.Printf(dstpath)
+		if err != nil {
+			fmt.Printf(err.Error())
+			return
+		}
+	}
+	fmt.Printf(iospath[0].(string))
+	err = afcconnection.Pull(path.Join(strings.Join(completepath, ""), iospath[0].(string)), path.Join(dstpath, iospath[0].(string)))
+	if err != nil {
+		fmt.Printf(err.Error())
+	}
+	runtime.EventsEmit(ctx, "copyfinished", iospath[1])
 }
 
 func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...interface{}) {

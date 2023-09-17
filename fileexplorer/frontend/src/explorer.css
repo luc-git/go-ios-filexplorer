@@ -44,3 +44,27 @@ img {
 .selected {
     background-color: #CCE8FF;
 }
+
+#contextmenu {
+    width: 295px;
+    background-color: ghostwhite;
+    user-select: none;
+    border: 2px, solid;
+    border-color: grey;
+    position: absolute;
+    border-radius: 10px;
+    color: black;
+}
+
+#contextmenu p {
+    font-size: 16px;
+}
+
+#contextmenuitem {
+    display: flex;
+    padding-left: 10px;
+}
+
+#contextmenu:hover {
+    background-color: #E5F3FF;
+}
