@@ -1,8 +1,3 @@
-#folder-img {
-    width: 84px;
-    height: 67px;
-}
-
 #folder-div {
     margin-right: 11px;
     margin-left: 11px;
@@ -39,6 +34,8 @@ html body {
 img {
     pointer-events: none;
     user-select: none;
+    width: 84px;
+    height: 67px;
 }
 
 .selected {
@@ -67,4 +64,9 @@ img {
 
 #contextmenu:hover {
     background-color: #E5F3FF;
+}
+
+#item {
+    width: 16px;
+    height: 16px;
 }

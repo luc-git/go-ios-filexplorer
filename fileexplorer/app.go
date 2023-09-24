@@ -61,7 +61,7 @@ func (a *App) NewAfc(ctx context.Context) {
 	})
 }
 
-func copyIos(ctx context.Context, iospath ...interface{}) { 
+func copyIos(ctx context.Context, iospath ...interface{}) {
 	var err error
 	fmt.Print(iospath[1])
 	if iospath[1].(float64) == 0 {
@@ -105,11 +105,7 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...int
 		} else if f == "." {
 			continue
 		}
-		if stat.IsDir() {
-			runtime.EventsEmit(ctx, "directories", f, true)
-		} else {
-			runtime.EventsEmit(ctx, "directories", f, false)
-		}
+		runtime.EventsEmit(ctx, "pathlist", f, stat.IsDir())
 	}
 }
 
