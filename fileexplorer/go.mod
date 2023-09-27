@@ -3,8 +3,7 @@ module changeme
 go 1.18
 
 require (
-	github.com/danielpaulus/go-ios v1.0.115
-	github.com/luc-git/go-ios v1.0.116-0.20230828201418-32257c600455
+	github.com/luc-git/go-ios v1.0.116-0.20230925230708-7ccc49e22c7f
 	github.com/wailsapp/wails/v2 v2.6.0
 )
 
@@ -27,8 +26,6 @@ require (
 	github.com/rivo/uniseg v0.4.4 // indirect
 	github.com/samber/lo v1.38.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/stretchr/objx v0.5.1 // indirect
-	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/tkrajina/go-reflector v0.5.6 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasttemplate v1.2.2 // indirect
@@ -39,7 +36,7 @@ require (
 	golang.org/x/net v0.15.0 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
-	howett.net/plist v1.0.0 // indirect
+	howett.net/plist v1.0.1-0.20230501193701-e03e84eb48a2 // indirect
 )
 
 // replace github.com/wailsapp/wails/v2 v2.5.1 => C:\Users\luc\go\pkg\mod
