@@ -7,7 +7,10 @@ window.addEventListener("contextmenu", (e) => {
     e.preventDefault()
 })
 
-EventsOn("pathlist", (path, isdir) => {
+EventsOn("pathlist", addpath)
+
+function addpath(path: string, isdir: boolean) {
+    console.log(path)
     let folderdiv = document.createElement("div")
     folderdiv.id = "folder-div"
     let dirflex = document.getElementById("dirflex")!
@@ -76,7 +79,7 @@ EventsOn("pathlist", (path, isdir) => {
             (e.target as HTMLElement).classList.add("selected")
         }
     }
-})
+}
 
 function unselectelements() {
     document.querySelectorAll("#folder-div").forEach((e) => {

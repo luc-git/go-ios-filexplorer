@@ -6,8 +6,10 @@ import (
 	"path"
 	"strings"
 
-	"github.com/danielpaulus/go-ios/ios"
+	"github.com/luc-git/go-ios/ios"
 	"github.com/luc-git/go-ios/ios/afc"
+
+	"github.com/luc-git/go-ios/ios/installationproxy"
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
@@ -48,6 +50,16 @@ func (a *App) NewAfc(ctx context.Context) {
 		runtime.EventsEmit(ctx, "idevice", err.Error(), false)
 		return
 	}
+	iosproxy, err := installationproxy.New(idevice)
+	if err != nil {
+		fmt.Printf(err.Error())
+		return
+	}
+	sharingapps, err := iosproxy.BrowseAllApps()
+	if err != nil {
+		fmt.Printf(err.Error())
+		return
+	}
 	afcconnection, err = afc.New(idevice)
 	if err != nil {
 		return
@@ -55,6 +67,9 @@ func (a *App) NewAfc(ctx context.Context) {
 	runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
 		getFiles(afcconnection, ctx, optionalData...)
+		if len(completepath) == 1 {
+			loadappDir(afcconnection, sharingapps, ctx)
+		}
 	})
 	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
 		copyIos(ctx, optionalData...)
@@ -90,7 +105,6 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...int
 		completepath = append(completepath, iospath[0].(string)+"/")
 	}
 	files, err := afcconnection.ListFiles(strings.Join(completepath, ""), "*")
-
 	fmt.Println(strings.Join(completepath, ""))
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -98,7 +112,6 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...int
 	}
 	for _, f := range files {
 		stat, err := afcconnection.Stat(path.Join(strings.Join(completepath, ""), f))
-		//fmt.Printf("files: " + f + "\n")
 		if err != nil {
 			fmt.Printf(err.Error() + " HEREEEE " + f + "\n")
 			continue
@@ -106,6 +119,15 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...int
 			continue
 		}
 		runtime.EventsEmit(ctx, "pathlist", f, stat.IsDir())
+	}
+}
+
+func loadappDir(afcconnection *afc.Connection, sharingapps []installationproxy.AppInfo, ctx context.Context) {
+	for _, sharing := range sharingapps {
+		if sharing.UIFileSharingEnabled {
+			fmt.Printf(sharing.CFBundleName + "\n")
+			runtime.EventsEmit(ctx, "pathlist", sharing.CFBundleName, true)
+		}
 	}
 }
 
