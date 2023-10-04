@@ -9,6 +9,31 @@ window.addEventListener("contextmenu", (e) => {
 
 EventsOn("pathlist", addpath)
 
+EventsOn("appslist", addappspath)
+
+function addappspath(path: string, appid: string, isdir: boolean, isroot: boolean) {
+    console.log(path)
+    let folderdiv = document.createElement("div")
+    folderdiv.id = "folder-div"
+    let dirflex = document.getElementById("dirflex")!
+    dirflex.appendChild(folderdiv)
+
+    let img = document.createElement("img")
+    let name = document.createElement("p")
+    name.innerText = path
+
+    if (isroot) {
+        img.src = "../images/filesharingapps/" + appid + ".png"
+    } else if (isdir) {
+        img.src = "../images/folder.svg"
+    } else {
+        img.src = "../images/file-earmark.svg"
+    }
+
+    folderdiv.appendChild(img)
+    folderdiv.appendChild(name)
+}
+
 function addpath(path: string, isdir: boolean) {
     console.log(path)
     let folderdiv = document.createElement("div")
@@ -36,6 +61,10 @@ function addpath(path: string, isdir: boolean) {
             console.log((e.target as HTMLElement).querySelector("p")?.innerText);
         }
     });
+    addsignals(folderdiv)
+}
+
+function addsignals(folderdiv: HTMLDivElement) {
     folderdiv.addEventListener("click", (e) => {
         if (!e.ctrlKey && !e.shiftKey) {
             unselectelements()

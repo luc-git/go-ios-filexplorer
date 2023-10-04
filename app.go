@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"os"
 	"path"
 	"strings"
 
@@ -65,10 +66,11 @@ func (a *App) NewAfc(ctx context.Context) {
 		return
 	}
 	runtime.EventsEmit(ctx, "idevice", "idevice found", true)
+	loadappDir(idevice, sharingapps)
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
 		getFiles(afcconnection, ctx, optionalData...)
 		if len(completepath) == 1 {
-			loadappDir(afcconnection, sharingapps, ctx)
+			getappsFiles(sharingapps, ctx)
 		}
 	})
 	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
@@ -122,13 +124,24 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, iospath ...int
 	}
 }
 
-func loadappDir(afcconnection *afc.Connection, sharingapps []installationproxy.AppInfo, ctx context.Context) {
+func getappsFiles(sharingapps []installationproxy.AppInfo, ctx context.Context) {
 	for _, sharing := range sharingapps {
 		if sharing.UIFileSharingEnabled {
-			fmt.Printf(sharing.CFBundleName + "\n")
-			runtime.EventsEmit(ctx, "pathlist", sharing.CFBundleName, true)
+			runtime.EventsEmit(ctx, "appslist", sharing.CFBundleName, sharing.CFBundleIdentifier, true, true)
 		}
 	}
+}
+
+func loadappDir(idevice ios.DeviceEntry, sharingapps []installationproxy.AppInfo) {
+	const filesharingpath = "images/filesharingapps"
+	devicecon, _ := New(idevice)
+	for _, sharing := range sharingapps {
+		if sharing.UIFileSharingEnabled {
+			os.MkdirAll(filesharingpath, os.ModeDir)
+			devicecon.GetIconData(filesharingpath, sharing.CFBundleIdentifier)
+		}
+	}
+	devicecon.deviceConn.Close()
 }
 
 func (a *App) shutdown(ctx context.Context) {

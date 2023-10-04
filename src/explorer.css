@@ -1,7 +1,9 @@
 #folder-div {
+    width: 83px;
     margin-right: 11px;
     margin-left: 11px;
     margin-top: 14px;
+    justify-content: center;
 }
 
 #folder-div:hover {
@@ -14,10 +16,12 @@
 
 p {
     overflow-wrap: break-word;
-    width: 84px;
+    width: 67px;
     font-size: 10px;
     color: black;
     text-align: center;
+    margin-left: 8px;
+    margin-right: 8px;
     pointer-events: none;
     user-select: none;
 }
@@ -34,7 +38,9 @@ html body {
 img {
     pointer-events: none;
     user-select: none;
-    width: 84px;
+    margin-left: 8px;
+    margin-right: 8px;
+    width: 67px;
     height: 67px;
 }
 
