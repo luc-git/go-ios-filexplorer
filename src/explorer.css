@@ -76,3 +76,32 @@ img {
     width: 16px;
     height: 16px;
 }
+
+#panel {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 75px;
+    color: black;
+}
+
+.panelbutton {
+    cursor: pointer;
+    user-select: none;
+}
+
+.panelbutton p {
+    font-size: 15px;
+    width: 125px;
+}
+
+.panelselected {
+    background-color: #CFE8FD;
+    font-weight: bold;
+    border-radius: 10px;
+}
+
+.panelselected p {
+    color: #1CA0EC;
+}

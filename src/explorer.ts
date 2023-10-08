@@ -134,6 +134,21 @@ document.onclick = function (e) {
     unselectelements()
 }
 
+document.getElementById("filesystembutton")!.classList.add("panelselected")
+document.getElementById("filesystembutton")!.onclick = function () {
+    document.getElementById("filesharingbutton")?.classList.remove("panelselected")
+    document.getElementById("filesystembutton")?.classList.add("panelselected")
+    document.getElementById("dirflex")!.innerHTML = ""
+    EventsEmit("getfiles", "")
+}
+
+document.getElementById("filesharingbutton")!.onclick = function () {
+    document.getElementById("filesystembutton")?.classList.remove("panelselected")
+    document.getElementById("filesharingbutton")?.classList.add("panelselected")
+    document.getElementById("dirflex")!.innerHTML = ""
+    EventsEmit("getapps")
+}
+
 EventsOn("copyfinished", (index) => {
     if (index > document.querySelectorAll(".selected").length) {
         return

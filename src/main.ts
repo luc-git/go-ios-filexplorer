@@ -1,5 +1,4 @@
 import { EventsEmit, EventsOn } from "../wailsjs/runtime/runtime"
-import "./explorer"
 
 EventsOn("idevice", (state, success) => {
     document.getElementById("result")!.innerText = state
@@ -20,5 +19,6 @@ document.getElementById("accessbutton")?.addEventListener("click", () => {
         .then(data => {
             document.body.innerHTML = data;
         });
-    EventsEmit("getfiles", ".")
+    import('./explorer')
+    EventsEmit("getfiles", "")
 })
