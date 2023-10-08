@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"path"
 	"strings"
 
@@ -65,22 +64,16 @@ func (a *App) NewAfc(ctx context.Context) {
 	}
 	runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 	loadappDir(idevice, sharingapps)
+	Newiosapp(idevice, ctx)
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
-		if optionalData[0].(string) == ".." {
-			completepath = completepath[:len(completepath)-1]
-		} else if optionalData[0].(string) == "" {
-			completepath = []string{}
-		} else {
-			completepath = append(completepath, optionalData[0].(string)+"/")
-		}
-		getFiles(afcconnection, ctx, completepath, optionalData...)
-		fmt.Print(len(completepath))
+		completepath = completePathEdit(completepath, optionalData[0].(string))
+		getFiles(afcconnection, ctx, completepath, false)
 	})
 	runtime.EventsOn(ctx, "getapps", func(optionalData ...interface{}) {
 		getapps(sharingapps, ctx)
 	})
 	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
-		copyIos(ctx, completepath, optionalData...)
+		copyIos(ctx, completepath)
 	})
 }
 
@@ -88,7 +81,6 @@ func copyIos(ctx context.Context, completepath []string, iospath ...interface{})
 	var err error
 	fmt.Print(iospath[1])
 	if iospath[1].(float64) == 0 {
-		fmt.Printf("HELLOOOOOOOO")
 		dstpath, err = runtime.OpenDirectoryDialog(ctx, runtime.OpenDialogOptions{
 			Title: "copy to",
 		})
@@ -106,9 +98,21 @@ func copyIos(ctx context.Context, completepath []string, iospath ...interface{})
 	runtime.EventsEmit(ctx, "copyfinished", iospath[1])
 }
 
-func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string, iospath ...interface{}) {
+func completePathEdit(completepath []string, path string) []string {
+	switch path {
+	case "..":
+		completepath = completepath[:len(completepath)-1]
+	case "":
+		completepath = []string{}
+	default:
+		completepath = append(completepath, path+"/")
+	}
+	return completepath
+}
+
+func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string, isapp bool) {
 	files, err := afcconnection.ListFiles(strings.Join(completepath, ""), "*")
-	//fmt.Println(strings.Join(completepath, ""))
+	fmt.Print(files)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
@@ -116,37 +120,17 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath [
 	for _, f := range files {
 		stat, err := afcconnection.Stat(path.Join(strings.Join(completepath, ""), f))
 		if err != nil {
-			fmt.Printf(err.Error() + " HEREEEE " + f + "\n")
 			continue
 		} else if f == "." {
 			continue
 		}
-		runtime.EventsEmit(ctx, "pathlist", f, stat.IsDir())
+		runtime.EventsEmit(ctx, "pathlist", f, stat.IsDir(), isapp)
 	}
-}
-
-func getapps(sharingapps []installationproxy.AppInfo, ctx context.Context) {
-	for _, sharing := range sharingapps {
-		if sharing.UIFileSharingEnabled {
-			runtime.EventsEmit(ctx, "appslist", sharing.CFBundleName, sharing.CFBundleIdentifier, true, true)
-		}
-	}
-}
-
-func loadappDir(idevice ios.DeviceEntry, sharingapps []installationproxy.AppInfo) {
-	const filesharingpath = "images/filesharingapps"
-	devicecon, _ := New(idevice)
-	for _, sharing := range sharingapps {
-		if sharing.UIFileSharingEnabled {
-			os.MkdirAll(filesharingpath, os.ModeDir)
-			devicecon.GetIconData(filesharingpath, sharing.CFBundleIdentifier)
-		}
-	}
-	devicecon.deviceConn.Close()
 }
 
 func (a *App) shutdown(ctx context.Context) {
 	if afcconnection != nil {
 		afcconnection.Close()
 	}
+	housearrestClose()
 }

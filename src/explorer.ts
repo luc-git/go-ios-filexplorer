@@ -11,7 +11,7 @@ EventsOn("pathlist", addpath)
 
 EventsOn("appslist", addappspath)
 
-function addappspath(path: string, appid: string, isdir: boolean, isroot: boolean) {
+function addappspath(path: string, appid: string) {
     console.log(path)
     let folderdiv = document.createElement("div")
     folderdiv.id = "folder-div"
@@ -22,19 +22,21 @@ function addappspath(path: string, appid: string, isdir: boolean, isroot: boolea
     let name = document.createElement("p")
     name.innerText = path
 
-    if (isroot) {
-        img.src = "../images/filesharingapps/" + appid + ".png"
-    } else if (isdir) {
-        img.src = "../images/folder.svg"
-    } else {
-        img.src = "../images/file-earmark.svg"
-    }
+    img.src = "../images/filesharingapps/" + appid + ".png"
+    folderdiv.setAttribute("appid", appid)
 
     folderdiv.appendChild(img)
     folderdiv.appendChild(name)
+
+    folderdiv.addEventListener("dblclick", (e) => {
+        EventsEmit("connecttoapp", (e.target as HTMLElement).getAttribute("appid"))
+        document.getElementById("dirflex")!.innerHTML = ""
+    });
+
+    addsignals(folderdiv)
 }
 
-function addpath(path: string, isdir: boolean) {
+function addpath(path: string, isdir: boolean, isapp: boolean) {
     console.log(path)
     let folderdiv = document.createElement("div")
     folderdiv.id = "folder-div"
@@ -56,7 +58,11 @@ function addpath(path: string, isdir: boolean) {
 
     folderdiv.addEventListener("dblclick", (e) => {
         if (isdir) {
-            EventsEmit("getfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
+            if (isapp) {
+                EventsEmit("getappsfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
+            } else {
+                EventsEmit("getfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
+            }
             document.getElementById("dirflex")!.innerHTML = ""
             console.log((e.target as HTMLElement).querySelector("p")?.innerText);
         }
