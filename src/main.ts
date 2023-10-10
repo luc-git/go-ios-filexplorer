@@ -12,13 +12,10 @@ document.getElementById("refreshbutton")?.addEventListener("click", () => {
 })
 
 document.getElementById("accessbutton")?.addEventListener("click", () => {
-    fetch("explorer.html")
-        .then(response => {
-            return response.text()
-        })
-        .then(data => {
-            document.body.innerHTML = data;
-        });
+    const request = new XMLHttpRequest
+    request.open("get", "explorer.html", false)
+    request.send()
+    console.log("load")
+    document.body.innerHTML = request.responseText;
     import('./explorer')
-    EventsEmit("getfiles", "")
 })

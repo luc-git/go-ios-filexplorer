@@ -7,6 +7,8 @@ window.addEventListener("contextmenu", (e) => {
     e.preventDefault()
 })
 
+EventsEmit("getfiles", "")
+
 EventsOn("pathlist", addpath)
 
 EventsOn("appslist", addappspath)
