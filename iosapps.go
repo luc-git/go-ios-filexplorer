@@ -15,7 +15,7 @@ import (
 
 var housearrestconnection *afc.Connection
 
-func Newiosapp(idevice ios.DeviceEntry, ctx context.Context) {
+func Newiosapp(sharingapps []installationproxy.AppInfo, idevice ios.DeviceEntry, ctx context.Context) {
 	completepath := []string{}
 	runtime.EventsOn(ctx, "connecttoapp", func(optionalData ...interface{}) {
 		completepath = nil
@@ -30,14 +30,23 @@ func Newiosapp(idevice ios.DeviceEntry, ctx context.Context) {
 	runtime.EventsOn(ctx, "getappsfiles", func(optionalData ...interface{}) {
 		completepath = completePathEdit(completepath, optionalData[0].(string))
 		if len(completepath) == 0 {
-			runtime.EventsEmit(ctx, "getapps")
+			getapps(sharingapps, ctx)
 			return
 		}
 		getFiles(housearrestconnection, ctx, completepath, true)
 	})
+	runtime.EventsOn(ctx, "getapps", func(optionalData ...interface{}) {
+		getapps(sharingapps, ctx)
+	})
+	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
+		if (filesharingapps){
+			copyIos(housearrestconnection, ctx, completepath, optionalData...)
+		}
+	})
 }
 
 func getapps(sharingapps []installationproxy.AppInfo, ctx context.Context) {
+	filesharingapps = true
 	for _, sharing := range sharingapps {
 		if sharing.UIFileSharingEnabled {
 			runtime.EventsEmit(ctx, "appslist", sharing.CFBundleName, sharing.CFBundleIdentifier)

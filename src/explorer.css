@@ -63,7 +63,7 @@ img {
     font-size: 16px;
 }
 
-#contextmenuitem {
+.contextmenuitem {
     display: flex;
     padding-left: 10px;
 }

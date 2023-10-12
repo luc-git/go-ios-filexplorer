@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"path"
 	"strings"
+	"sync"
 
 	"github.com/luc-git/go-ios/ios"
 	"github.com/luc-git/go-ios/ios/afc"
@@ -15,7 +16,11 @@ import (
 
 var afcconnection *afc.Connection
 
+var mutex sync.Mutex
+
 var dstpath string
+
+var filesharingapps bool = false
 
 // App struct
 type App struct {
@@ -64,23 +69,25 @@ func (a *App) NewAfc(ctx context.Context) {
 	}
 	runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 	loadappDir(idevice, sharingapps)
-	Newiosapp(idevice, ctx)
+	Newiosapp(sharingapps, idevice, ctx)
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
 		completepath = completePathEdit(completepath, optionalData[0].(string))
+		filesharingapps = false
 		getFiles(afcconnection, ctx, completepath, false)
 	})
-	runtime.EventsOn(ctx, "getapps", func(optionalData ...interface{}) {
-		getapps(sharingapps, ctx)
-	})
 	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
-		copyIos(ctx, completepath)
+		if (!filesharingapps){
+			copyIos(afcconnection, ctx, completepath, optionalData...)
+		}
 	})
 }
 
-func copyIos(ctx context.Context, completepath []string, iospath ...interface{}) {
-	var err error
+func copyIos(afcconnection *afc.Connection, ctx context.Context, completepath []string, iospath ...interface{}) {
 	fmt.Print(iospath[1])
-	if iospath[1].(float64) == 0 {
+	var err error
+	mutex.Lock()
+	defer mutex.Unlock()
+	if iospath[1].(bool) {
 		dstpath, err = runtime.OpenDirectoryDialog(ctx, runtime.OpenDialogOptions{
 			Title: "copy to",
 		})
@@ -95,7 +102,7 @@ func copyIos(ctx context.Context, completepath []string, iospath ...interface{})
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
-	runtime.EventsEmit(ctx, "copyfinished", iospath[1])
+	//runtime.EventsEmit(ctx, "copyfinished", iospath[1])
 }
 
 func completePathEdit(completepath []string, path string) []string {

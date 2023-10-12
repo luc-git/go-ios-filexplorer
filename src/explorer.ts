@@ -1,5 +1,7 @@
 import { EventsEmit, EventsOn } from "../wailsjs/runtime/runtime"
 
+import "./contextmenu"
+
 let selecteditem: HTMLElement
 let lastselecteditem: HTMLElement
 
@@ -135,10 +137,6 @@ document.onclick = function (e) {
         return
     }
     document.getElementById("contextmenu")!.hidden = true
-    if ((e.target as HTMLElement).id == "contextmenuitem") {
-        EventsEmit("copyto", document.querySelectorAll(".selected").item(0).querySelector("p")?.innerText, 0)
-        return
-    }
     unselectelements()
 }
 
@@ -156,10 +154,3 @@ document.getElementById("filesharingbutton")!.onclick = function () {
     document.getElementById("dirflex")!.innerHTML = ""
     EventsEmit("getapps")
 }
-
-EventsOn("copyfinished", (index) => {
-    if (index > document.querySelectorAll(".selected").length) {
-        return
-    }
-    EventsEmit("copyto", document.querySelectorAll(".selected").item(index++).querySelector("p")?.innerText, index++)
-})
