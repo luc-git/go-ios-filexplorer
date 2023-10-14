@@ -40,7 +40,7 @@ function addappspath(path: string, appid: string) {
     addsignals(folderdiv)
 }
 
-function addpath(path: string, isdir: boolean, isapp: boolean) {
+function addpath(path: string, isdir: boolean) {
     console.log(path)
     let folderdiv = document.createElement("div")
     folderdiv.id = "folder-div"
@@ -62,11 +62,7 @@ function addpath(path: string, isdir: boolean, isapp: boolean) {
 
     folderdiv.addEventListener("dblclick", (e) => {
         if (isdir) {
-            if (isapp) {
-                EventsEmit("getappsfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
-            } else {
-                EventsEmit("getfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
-            }
+            EventsEmit("getfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
             document.getElementById("dirflex")!.innerHTML = ""
             console.log((e.target as HTMLElement).querySelector("p")?.innerText);
         }
@@ -145,6 +141,7 @@ document.getElementById("filesystembutton")!.onclick = function () {
     document.getElementById("filesharingbutton")?.classList.remove("panelselected")
     document.getElementById("filesystembutton")?.classList.add("panelselected")
     document.getElementById("dirflex")!.innerHTML = ""
+    EventsEmit("filesystemmode")
     EventsEmit("getfiles", "")
 }
 

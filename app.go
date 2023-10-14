@@ -14,13 +14,11 @@ import (
 	"github.com/wailsapp/wails/v2/pkg/runtime"
 )
 
-var afcconnection *afc.Connection
-
 var mutex sync.Mutex
 
 var dstpath string
 
-var filesharingapps bool = false
+var housearrestconnection *afc.Connection
 
 // App struct
 type App struct {
@@ -32,27 +30,9 @@ func NewApp() *App {
 	return &App{}
 }
 
-// startup is called when the app starts. The context is saved
-// so we can call the runtime methods
-func (a *App) startup(ctx context.Context) {
-	a.ctx = ctx
-	runtime.EventsOn(ctx, "refresh", func(optionalData ...interface{}) {
-		a.NewAfc(ctx)
-	})
-}
-
 // Greet returns a greeting for the given name
-func (a *App) NewAfc(ctx context.Context) {
+func (a *App) newAfc(ctx context.Context, afcconnection *afc.Connection, idevice ios.DeviceEntry) {
 	completepath := []string{}
-	if afcconnection != nil {
-		runtime.EventsEmit(ctx, "idevice", "idevice found", true)
-		return
-	}
-	idevice, err := ios.GetDevice("")
-	if err != nil {
-		runtime.EventsEmit(ctx, "idevice", err.Error(), false)
-		return
-	}
 	iosproxy, err := installationproxy.New(idevice)
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -63,20 +43,46 @@ func (a *App) NewAfc(ctx context.Context) {
 		fmt.Printf(err.Error())
 		return
 	}
-	afcconnection, err = afc.New(idevice)
-	if err != nil {
-		return
-	}
 	runtime.EventsEmit(ctx, "idevice", "idevice found", true)
 	loadappDir(idevice, sharingapps)
-	Newiosapp(sharingapps, idevice, ctx)
+	eventRegister(ctx, completepath, sharingapps, idevice, afcconnection)
+}
+
+func eventRegister(ctx context.Context, completepath []string, sharingapps []installationproxy.AppInfo, idevice ios.DeviceEntry, afcconnection *afc.Connection) {
+	var filesharingapps bool = false
+	runtime.EventsOn(ctx, "filesystemmode", func(optionalData ...interface{}) {
+		filesharingapps = false
+	})
+	runtime.EventsOn(ctx, "connecttoapp", func(optionalData ...interface{}) {
+		completepath = nil
+		completepath = append(completepath, "Documents/")
+		if housearrestconnection == nil {
+			housearrestconnection = newHouseArrest(idevice, ctx, completepath, optionalData...)
+		} else {
+			housearrestconnection.Close()
+			housearrestconnection = newHouseArrest(idevice, ctx, completepath, optionalData...)
+		}
+	})
+	runtime.EventsOn(ctx, "getapps", func(optionalData ...interface{}) {
+		filesharingapps = true
+		getapps(sharingapps, ctx)
+	})
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
 		completepath = completePathEdit(completepath, optionalData[0].(string))
-		filesharingapps = false
-		getFiles(afcconnection, ctx, completepath, false)
+		if filesharingapps && len(completepath) == 0 {
+			getapps(sharingapps, ctx)
+			return
+		}
+		if filesharingapps {
+			getFiles(housearrestconnection, ctx, completepath, true)
+		} else {
+			getFiles(afcconnection, ctx, completepath, false)
+		}
 	})
 	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
-		if (!filesharingapps){
+		if filesharingapps {
+			copyIos(housearrestconnection, ctx, completepath, optionalData...)
+		} else {
 			copyIos(afcconnection, ctx, completepath, optionalData...)
 		}
 	})
@@ -131,11 +137,11 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath [
 		} else if f == "." {
 			continue
 		}
-		runtime.EventsEmit(ctx, "pathlist", f, stat.IsDir(), isapp)
+		runtime.EventsEmit(ctx, "pathlist", f, stat.IsDir())
 	}
 }
 
-func (a *App) shutdown(ctx context.Context) {
+func (a *App) shutdown(ctx context.Context, afcconnection *afc.Connection) {
 	if afcconnection != nil {
 		afcconnection.Close()
 	}
