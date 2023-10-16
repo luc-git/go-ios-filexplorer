@@ -86,6 +86,13 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 			copyIos(afcconnection, ctx, completepath, optionalData...)
 		}
 	})
+	runtime.EventsOn(ctx, "renamepath", func(optionalData ...interface{}) {
+		if filesharingapps {
+			housearrestconnection.RenamePath(strings.Join(completepath, "")+"/"+optionalData[0].(string), strings.Join(completepath, "")+"/"+optionalData[1].(string))
+		} else {
+			afcconnection.RenamePath(strings.Join(completepath, "")+"/"+optionalData[0].(string), strings.Join(completepath, "")+"/"+optionalData[1].(string))
+		}
+	})
 }
 
 func copyIos(afcconnection *afc.Connection, ctx context.Context, completepath []string, iospath ...interface{}) {

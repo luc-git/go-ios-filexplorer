@@ -5,10 +5,6 @@ import "./contextmenu"
 let selecteditem: HTMLElement
 let lastselecteditem: HTMLElement
 
-window.addEventListener("contextmenu", (e) => {
-    e.preventDefault()
-})
-
 EventsEmit("getfiles", "")
 
 EventsOn("pathlist", addpath)
@@ -110,7 +106,11 @@ function addsignals(folderdiv: HTMLDivElement) {
         dropdown!.hidden = false
         dropdown!.style.left = String(e.x + 5) + "px"
         dropdown!.style.top = String(e.y + 5) + "px";
-        if (!document.querySelectorAll(".selected").item(0)) {
+        if (!document.querySelector(".selected")) {
+            (e.target as HTMLElement).classList.add("selected")
+        }
+        else {
+            document.querySelector(".selected")?.classList.remove("selected");
             (e.target as HTMLElement).classList.add("selected")
         }
     }
@@ -136,7 +136,6 @@ document.onclick = function (e) {
     unselectelements()
 }
 
-document.getElementById("filesystembutton")!.classList.add("panelselected")
 document.getElementById("filesystembutton")!.onclick = function () {
     document.getElementById("filesharingbutton")?.classList.remove("panelselected")
     document.getElementById("filesystembutton")?.classList.add("panelselected")
