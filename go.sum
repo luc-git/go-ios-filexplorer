@@ -27,8 +27,8 @@ github.com/leaanthony/gosod v1.0.3/go.mod h1:BJ2J+oHsQIyIQpnLPjnqFGTMnOZXDbvWtRC
 github.com/leaanthony/slicer v1.5.0/go.mod h1:FwrApmf8gOrpzEWM2J/9Lh79tyq8KTX5AzRtwV7m4AY=
 github.com/leaanthony/slicer v1.6.0 h1:1RFP5uiPJvT93TAHi+ipd3NACobkW53yUiBqZheE/Js=
 github.com/leaanthony/slicer v1.6.0/go.mod h1:o/Iz29g7LN0GqH3aMjWAe90381nyZlDNquK+mtH2Fj8=
-github.com/luc-git/go-ios v1.0.116-0.20231015152043-8acce3cdfdba h1:84xtt6j0Rp6HrikC9kWa7hY7wtKTI9W/m3jsubVNwSs=
-github.com/luc-git/go-ios v1.0.116-0.20231015152043-8acce3cdfdba/go.mod h1:05UfO0sf1NNnEVs0FWuQwA2UElRS7GGQKbjTKpJnseU=
+github.com/luc-git/go-ios v1.0.116-0.20231016212552-25c4f36c393c h1:MzDt6Ug0f91jup9M3UTjJoVtTj4i8SlW9ljrcuooCBw=
+github.com/luc-git/go-ios v1.0.116-0.20231016212552-25c4f36c393c/go.mod h1:05UfO0sf1NNnEVs0FWuQwA2UElRS7GGQKbjTKpJnseU=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
 github.com/matryer/is v1.4.0/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
 github.com/mattn/go-colorable v0.1.11/go.mod h1:u5H1YNBxpqRaxsYJYSkiCWKzEfiAb1Gb520KVy5xxl4=

@@ -3,7 +3,7 @@ module changeme
 go 1.18
 
 require (
-	github.com/luc-git/go-ios v1.0.116-0.20231015152043-8acce3cdfdba
+	github.com/luc-git/go-ios v1.0.116-0.20231016212552-25c4f36c393c
 	github.com/wailsapp/wails/v2 v2.6.0
 )
 
