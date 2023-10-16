@@ -33,7 +33,7 @@ func main() {
 		OnDomReady: func(ctx context.Context) {
 			afcconnection = setup(ctx, afcconnection, app)
 			runtime.EventsOn(ctx, "refresh", func(optionalData ...interface{}) {
-				if afcconnection == nil{
+				if afcconnection == nil {
 					afcconnection = setup(ctx, afcconnection, app)
 				}
 			})
@@ -51,7 +51,7 @@ func main() {
 	}
 }
 
-func setup(ctx context.Context, afcconnection *afc.Connection, app *App) *afc.Connection{
+func setup(ctx context.Context, afcconnection *afc.Connection, app *App) *afc.Connection {
 	idevice, err := ios.GetDevice("")
 	if err != nil {
 		runtime.EventsEmit(ctx, "idevice", err.Error(), false)

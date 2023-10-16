@@ -59,20 +59,22 @@ img {
     color: black;
 }
 
-#contextmenu p {
+.contextmenuitem p {
     font-size: 16px;
 }
 
 .contextmenuitem {
     display: flex;
+    align-items: center;
     padding-left: 10px;
 }
 
-#contextmenu:hover {
+.contextmenuitem:hover {
     background-color: #E5F3FF;
+    border-radius: 10px;
 }
 
-#item {
+.contextmenuitem img {
     width: 16px;
     height: 16px;
 }
