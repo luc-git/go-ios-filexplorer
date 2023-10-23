@@ -54,7 +54,7 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 		filesharingapps = false
 	})
 	runtime.EventsOn(ctx, "connecttoapp", func(optionalData ...interface{}) {
-		completepath = nil
+		completepath = []string{}
 		completepath = append(completepath, "Documents/")
 		if housearrestconnection == nil {
 			housearrestconnection = newHouseArrest(idevice, ctx, completepath, optionalData...)
@@ -88,9 +88,9 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 	})
 	runtime.EventsOn(ctx, "renamepath", func(optionalData ...interface{}) {
 		if filesharingapps {
-			housearrestconnection.RenamePath(strings.Join(completepath, "")+"/"+optionalData[0].(string), strings.Join(completepath, "")+"/"+optionalData[1].(string))
+			housearrestconnection.RenamePath(pathToString(completepath)+optionalData[0].(string), pathToString(completepath)+optionalData[1].(string))
 		} else {
-			afcconnection.RenamePath(strings.Join(completepath, "")+"/"+optionalData[0].(string), strings.Join(completepath, "")+"/"+optionalData[1].(string))
+			afcconnection.RenamePath(pathToString(completepath)+optionalData[0].(string), pathToString(completepath)+optionalData[1].(string))
 		}
 	})
 }
@@ -111,7 +111,7 @@ func copyIos(afcconnection *afc.Connection, ctx context.Context, completepath []
 		}
 	}
 	fmt.Printf(iospath[0].(string))
-	err = afcconnection.Pull(path.Join(strings.Join(completepath, ""), iospath[0].(string)), path.Join(dstpath, iospath[0].(string)))
+	err = afcconnection.Pull(pathToString(completepath)+iospath[0].(string), path.Join(dstpath, iospath[0].(string)))
 	if err != nil {
 		fmt.Printf(err.Error())
 	}
@@ -131,14 +131,14 @@ func completePathEdit(completepath []string, path string) []string {
 }
 
 func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string, isapp bool) {
-	files, err := afcconnection.ListFiles(strings.Join(completepath, ""), "*")
+	files, err := afcconnection.ListFiles(pathToString(completepath), "*")
 	fmt.Print(files)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
 	}
 	for _, f := range files {
-		stat, err := afcconnection.Stat(path.Join(strings.Join(completepath, ""), f))
+		stat, err := afcconnection.Stat(pathToString(completepath) + f)
 		if err != nil {
 			continue
 		} else if f == "." {
@@ -153,4 +153,8 @@ func (a *App) shutdown(ctx context.Context, afcconnection *afc.Connection) {
 		afcconnection.Close()
 	}
 	housearrestClose()
+}
+
+func pathToString(completepath []string) string {
+	return strings.Join(completepath, "/")
 }
