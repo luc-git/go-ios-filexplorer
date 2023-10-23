@@ -1,5 +1,7 @@
 #folder-div {
+    display: grid;
     width: 83px;
+    height: 121px;
     margin-right: 11px;
     margin-left: 11px;
     margin-top: 14px;
@@ -18,10 +20,7 @@ p {
     overflow-wrap: break-word;
     width: 67px;
     font-size: 10px;
-    color: black;
     text-align: center;
-    margin-left: 8px;
-    margin-right: 8px;
     pointer-events: none;
     user-select: none;
 }
@@ -33,13 +32,12 @@ p {
 
 html body {
     background-color: white;
+    user-select: none;
+    color: black;
 }
 
 img {
     pointer-events: none;
-    user-select: none;
-    margin-left: 8px;
-    margin-right: 8px;
     width: 67px;
     height: 67px;
 }
@@ -49,24 +47,22 @@ img {
 }
 
 #contextmenu {
-    width: 295px;
+    width: 285px;
     background-color: ghostwhite;
-    user-select: none;
-    border: 2px, solid;
-    border-color: grey;
     position: absolute;
+    padding: 5px;
     border-radius: 10px;
-    color: black;
 }
 
 .contextmenuitem p {
     font-size: 16px;
+    text-align: left;
+    width: 100%;
 }
 
 .contextmenuitem {
     display: flex;
     align-items: center;
-    padding-left: 10px;
 }
 
 .contextmenuitem:hover {
@@ -77,6 +73,8 @@ img {
 .contextmenuitem img {
     width: 16px;
     height: 16px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 #panel {
@@ -85,12 +83,11 @@ img {
     align-items: center;
     width: 100%;
     height: 75px;
-    color: black;
 }
 
 .panelbutton {
     cursor: pointer;
-    user-select: none;
+    border-radius: 10px;
 }
 
 .panelbutton p {
@@ -101,7 +98,6 @@ img {
 .panelselected {
     background-color: #CFE8FD;
     font-weight: bold;
-    border-radius: 10px;
 }
 
 .panelselected p {
