@@ -11,6 +11,10 @@ EventsOn("pathlist", addpath)
 
 EventsOn("appslist", addappspath)
 
+EventsOn("clearpage", () => {
+    document.getElementById("dirflex")!.innerHTML = ""
+})
+
 function addappspath(path: string, appid: string) {
     console.log(path)
     let folderdiv = document.createElement("div")
@@ -30,7 +34,6 @@ function addappspath(path: string, appid: string) {
 
     folderdiv.addEventListener("dblclick", (e) => {
         EventsEmit("connecttoapp", (e.target as HTMLElement).getAttribute("appid"))
-        document.getElementById("dirflex")!.innerHTML = ""
     });
 
     addsignals(folderdiv)
@@ -59,7 +62,6 @@ function addpath(path: string, isdir: boolean) {
     folderdiv.addEventListener("dblclick", (e) => {
         if (isdir) {
             EventsEmit("getfiles", (e.target as HTMLElement).querySelector("p")?.innerText)
-            document.getElementById("dirflex")!.innerHTML = ""
             console.log((e.target as HTMLElement).querySelector("p")?.innerText);
         }
     });
@@ -104,8 +106,8 @@ function addsignals(folderdiv: HTMLDivElement) {
     folderdiv.oncontextmenu = function (e) {
         let dropdown = document.getElementById("contextmenu")
         dropdown!.hidden = false
-        dropdown!.style.left = String(e.x + 5) + "px"
-        dropdown!.style.top = String(e.y + 5) + "px";
+        dropdown!.style.left = String(e.x) + "px"
+        dropdown!.style.top = String(e.y) + "px";
         if (!document.querySelector(".selected")) {
             (e.target as HTMLElement).classList.add("selected")
         }
@@ -113,6 +115,9 @@ function addsignals(folderdiv: HTMLDivElement) {
             document.querySelector(".selected")?.classList.remove("selected");
             (e.target as HTMLElement).classList.add("selected")
         }
+        document.querySelectorAll(".contextmenuitem").forEach((element) => {
+            (element as HTMLFieldSetElement).disabled = false
+        })
     }
 }
 
@@ -139,7 +144,6 @@ document.onclick = function (e) {
 document.getElementById("filesystembutton")!.onclick = function () {
     document.getElementById("filesharingbutton")?.classList.remove("panelselected")
     document.getElementById("filesystembutton")?.classList.add("panelselected")
-    document.getElementById("dirflex")!.innerHTML = ""
     EventsEmit("filesystemmode")
     EventsEmit("getfiles", "")
 }
@@ -147,6 +151,5 @@ document.getElementById("filesystembutton")!.onclick = function () {
 document.getElementById("filesharingbutton")!.onclick = function () {
     document.getElementById("filesystembutton")?.classList.remove("panelselected")
     document.getElementById("filesharingbutton")?.classList.add("panelselected")
-    document.getElementById("dirflex")!.innerHTML = ""
     EventsEmit("getapps")
 }

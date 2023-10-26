@@ -54,6 +54,7 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 		filesharingapps = false
 	})
 	runtime.EventsOn(ctx, "connecttoapp", func(optionalData ...interface{}) {
+		runtime.EventsEmit(ctx, "clearpage")
 		completepath = []string{}
 		completepath = append(completepath, "Documents/")
 		if housearrestconnection == nil {
@@ -74,9 +75,9 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 			return
 		}
 		if filesharingapps {
-			getFiles(housearrestconnection, ctx, completepath, true)
+			getFiles(housearrestconnection, ctx, completepath)
 		} else {
-			getFiles(afcconnection, ctx, completepath, false)
+			getFiles(afcconnection, ctx, completepath)
 		}
 	})
 	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
@@ -91,6 +92,13 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 			housearrestconnection.RenamePath(pathToString(completepath)+optionalData[0].(string), pathToString(completepath)+optionalData[1].(string))
 		} else {
 			afcconnection.RenamePath(pathToString(completepath)+optionalData[0].(string), pathToString(completepath)+optionalData[1].(string))
+		}
+	})
+	runtime.EventsOn(ctx, "addfiles", func(optionalData ...interface{}) {
+		if filesharingapps {
+			addFiles(housearrestconnection, ctx, completepath)
+		} else {
+			addFiles(afcconnection, ctx, completepath)
 		}
 	})
 }
@@ -118,6 +126,24 @@ func copyIos(afcconnection *afc.Connection, ctx context.Context, completepath []
 	//runtime.EventsEmit(ctx, "copyfinished", iospath[1])
 }
 
+func addFiles(afccconnection *afc.Connection, ctx context.Context, completepath []string) {
+	srcpath, err := runtime.OpenMultipleFilesDialog(ctx, runtime.OpenDialogOptions{
+		Title: "add files",
+	})
+	if err != nil {
+		fmt.Printf(err.Error())
+		return
+	}
+	for _, file := range srcpath {
+		err = afccconnection.Push(file, pathToString(completepath))
+		if err != nil {
+			fmt.Printf(err.Error())
+			continue
+		}
+	}
+	getFiles(afccconnection, ctx, completepath)
+}
+
 func completePathEdit(completepath []string, path string) []string {
 	switch path {
 	case "..":
@@ -130,7 +156,8 @@ func completePathEdit(completepath []string, path string) []string {
 	return completepath
 }
 
-func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string, isapp bool) {
+func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string) {
+	runtime.EventsEmit(ctx, "clearpage")
 	files, err := afcconnection.ListFiles(pathToString(completepath), "*")
 	fmt.Print(files)
 	if err != nil {

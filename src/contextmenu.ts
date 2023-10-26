@@ -42,9 +42,28 @@ document.getElementById("rename")!.onclick = function (e) {
     }
 }
 
+document.getElementById("add")!.onclick = function () {
+    EventsEmit("addfiles")
+}
+
 EventsOn("copyfinished", (index) => {
     if (index > document.querySelectorAll(".selected").length) {
         return
     }
     EventsEmit("copyto", document.querySelectorAll(".selected").item(index++).querySelector("p")?.innerText, index++)
 })
+
+document.oncontextmenu = function (e) {
+    if ((e.target as HTMLElement).id == "folder-div") {
+        return
+    }
+    let dropdown = document.getElementById("contextmenu")
+    dropdown!.hidden = false
+    dropdown!.style.left = String(e.x) + "px"
+    dropdown!.style.top = String(e.y) + "px";
+    document.querySelectorAll(".contextmenuitem").forEach((element) => {
+        if ((element as HTMLFieldSetElement).id != "add") {
+            (element as HTMLFieldSetElement).disabled = true
+        }
+    })
+}

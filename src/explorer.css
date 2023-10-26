@@ -51,6 +51,7 @@ img {
     background-color: ghostwhite;
     position: absolute;
     padding: 5px;
+    margin: 5px;
     border-radius: 10px;
 }
 
@@ -102,4 +103,13 @@ img {
 
 .panelselected p {
     color: #1CA0EC;
+}
+
+:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+fieldset {
+    border: none;
 }

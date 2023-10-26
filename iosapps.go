@@ -14,6 +14,7 @@ import (
 )
 
 func getapps(sharingapps []installationproxy.AppInfo, ctx context.Context) {
+	runtime.EventsEmit(ctx, "clearpage")
 	for _, sharing := range sharingapps {
 		if sharing.UIFileSharingEnabled {
 			runtime.EventsEmit(ctx, "appslist", sharing.CFBundleName, sharing.CFBundleIdentifier)
@@ -41,7 +42,7 @@ func newHouseArrest(idevice ios.DeviceEntry, ctx context.Context, completepath [
 		return nil
 	}
 	housearrestconnection := (*afc.Connection)(unsafe.Pointer(connection))
-	getFiles(housearrestconnection, ctx, completepath, true)
+	getFiles(housearrestconnection, ctx, completepath)
 	return housearrestconnection
 }
 
