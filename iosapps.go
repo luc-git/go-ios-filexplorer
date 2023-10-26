@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"os"
 	"unsafe"
 
 	"github.com/luc-git/go-ios/ios"
@@ -27,7 +26,6 @@ func loadappDir(idevice ios.DeviceEntry, sharingapps []installationproxy.AppInfo
 	devicecon, _ := New(idevice)
 	for _, sharing := range sharingapps {
 		if sharing.UIFileSharingEnabled {
-			os.MkdirAll(filesharingpath, os.ModeDir)
 			devicecon.GetIconData(filesharingpath, sharing.CFBundleIdentifier)
 		}
 	}
