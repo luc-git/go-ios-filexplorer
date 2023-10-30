@@ -20,6 +20,12 @@ var dstpath string
 
 var housearrestconnection *afc.Connection
 
+const (
+	Directory int = 0
+	File      int = 1
+	Iosapp    int = 2
+)
+
 // App struct
 type App struct {
 	ctx context.Context
@@ -50,9 +56,6 @@ func (a *App) newAfc(ctx context.Context, afcconnection *afc.Connection, idevice
 
 func eventRegister(ctx context.Context, completepath []string, sharingapps []installationproxy.AppInfo, idevice ios.DeviceEntry, afcconnection *afc.Connection) {
 	var filesharingapps bool = false
-	runtime.EventsOn(ctx, "filesystemmode", func(optionalData ...interface{}) {
-		filesharingapps = false
-	})
 	runtime.EventsOn(ctx, "connecttoapp", func(optionalData ...interface{}) {
 		runtime.EventsEmit(ctx, "clearpage")
 		completepath = []string{}
@@ -69,6 +72,7 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 		getapps(sharingapps, ctx)
 	})
 	runtime.EventsOn(ctx, "getfiles", func(optionalData ...interface{}) {
+		filesharingapps = optionalData[1].(bool)
 		completepath = completePathEdit(completepath, optionalData[0].(string))
 		if filesharingapps && len(completepath) == 0 {
 			getapps(sharingapps, ctx)
@@ -171,7 +175,11 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath [
 		} else if f == "." {
 			continue
 		}
-		runtime.EventsEmit(ctx, "pathlist", f, stat.IsDir())
+		if stat.IsDir() {
+			runtime.EventsEmit(ctx, "pathlist", f, Directory, "")
+		} else {
+			runtime.EventsEmit(ctx, "pathlist", f, File, "")
+		}
 	}
 }
 

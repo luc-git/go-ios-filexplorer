@@ -2,11 +2,11 @@ import { EventsEmit, EventsOn } from "../wailsjs/runtime/runtime"
 
 let select = true
 
-oncontextmenu = function (e) {
-    e.preventDefault()
+oncontextmenu = (element) => {
+    element.preventDefault()
 }
 
-document.getElementById("copy")!.onclick = function () {
+document.getElementById("copy")!.onclick = () => {
     document.querySelectorAll(".selected").forEach((element) => {
         EventsEmit("copyto", element.querySelector("p")?.innerText, select)
         select = false
@@ -14,26 +14,26 @@ document.getElementById("copy")!.onclick = function () {
     select = true
 }
 
-document.getElementById("rename")!.onclick = function (e) {
+document.getElementById("rename")!.onclick = (element) => {
     const oldname = document.querySelector(".selected")?.querySelector("p")?.innerText
     let name = document.querySelector(".selected")?.querySelector("p")
     name!.contentEditable = "true"
     name?.click()
     name!.style.pointerEvents = "all"
     name?.focus()
-    name!.onkeydown = function (key) {
+    name!.onkeydown = (key) => {
         if (key.code == "Enter") {
             name!.contentEditable = "false"
             name!.style.pointerEvents = "none"
             EventsEmit("renamepath", oldname, name?.innerText)
         }
     }
-    name!.ondblclick = function (e) {
-        e.stopPropagation()
+    name!.ondblclick = (element) => {
+        element.stopPropagation()
     }
-    e.stopPropagation()
-    onclick = function (e) {
-        if ((e.target as HTMLElement).nodeName == "P") {
+    element.stopPropagation()
+    onclick = (element) => {
+        if ((element.target as HTMLElement).nodeName == "P") {
             return
         }
         name!.contentEditable = "false"
@@ -42,7 +42,7 @@ document.getElementById("rename")!.onclick = function (e) {
     }
 }
 
-document.getElementById("add")!.onclick = function () {
+document.getElementById("add")!.onclick = () => {
     EventsEmit("addfiles")
 }
 
@@ -53,14 +53,14 @@ EventsOn("copyfinished", (index) => {
     EventsEmit("copyto", document.querySelectorAll(".selected").item(index++).querySelector("p")?.innerText, index++)
 })
 
-document.oncontextmenu = function (e) {
-    if ((e.target as HTMLElement).id == "folder-div") {
+document.oncontextmenu = (element) => {
+    if ((element.target as HTMLElement).id == "folder-div") {
         return
     }
     let dropdown = document.getElementById("contextmenu")
     dropdown!.hidden = false
-    dropdown!.style.left = String(e.x) + "px"
-    dropdown!.style.top = String(e.y) + "px";
+    dropdown!.style.left = String(element.x) + "px"
+    dropdown!.style.top = String(element.y) + "px";
     document.querySelectorAll(".contextmenuitem").forEach((element) => {
         if ((element as HTMLFieldSetElement).id != "add") {
             (element as HTMLFieldSetElement).disabled = true

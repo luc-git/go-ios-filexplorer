@@ -16,7 +16,7 @@ func getapps(sharingapps []installationproxy.AppInfo, ctx context.Context) {
 	runtime.EventsEmit(ctx, "clearpage")
 	for _, sharing := range sharingapps {
 		if sharing.UIFileSharingEnabled {
-			runtime.EventsEmit(ctx, "appslist", sharing.CFBundleName, sharing.CFBundleIdentifier)
+			runtime.EventsEmit(ctx, "pathlist", sharing.CFBundleName, Iosapp, sharing.CFBundleIdentifier)
 		}
 	}
 }
@@ -26,7 +26,7 @@ func loadappDir(idevice ios.DeviceEntry, sharingapps []installationproxy.AppInfo
 	devicecon, _ := New(idevice)
 	for _, sharing := range sharingapps {
 		if sharing.UIFileSharingEnabled {
-			devicecon.GetIconData(filesharingpath, sharing.CFBundleIdentifier)
+			devicecon.GetIconData(filesharingpath, sharing.CFBundleIdentifier, sharing.CFBundleName)
 		}
 	}
 	devicecon.deviceConn.Close()

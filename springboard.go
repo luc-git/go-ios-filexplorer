@@ -24,7 +24,7 @@ func New(device ios.DeviceEntry) (*Connection, error) {
 
 }
 
-func (conn *Connection) GetIconData(filesharingpath string, bundleId string) error {
+func (conn *Connection) GetIconData(filesharingpath string, bundleId string, BundleName string) error {
 	reader := conn.deviceConn.Reader()
 	getIconPNGData := map[string]interface{}{"command": "getIconPNGData", "bundleId": bundleId}
 	msg, err := conn.plistCodec.Encode(getIconPNGData)
@@ -49,6 +49,6 @@ func (conn *Connection) GetIconData(filesharingpath string, bundleId string) err
 		return fmt.Errorf("unexpected response: %+v", plist)
 	}
 	fmt.Printf(bundleId + "\n")
-	os.WriteFile(path.Join(filesharingpath, bundleId+".png"), status.([]byte), 0777)
+	os.WriteFile(path.Join(filesharingpath, BundleName+".png"), status.([]byte), 0777)
 	return nil
 }
