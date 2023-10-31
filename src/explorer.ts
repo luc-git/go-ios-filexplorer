@@ -138,12 +138,21 @@ document.onclick = (element) => {
 
 document.getElementById("filesystembutton")!.onclick = () => {
     document.getElementById("filesharingbutton")?.classList.remove("panelselected")
+    document.getElementById("photosbutton")?.classList.remove("panelselected")
     document.getElementById("filesystembutton")?.classList.add("panelselected")
     EventsEmit("getfiles", "", false)
 }
 
 document.getElementById("filesharingbutton")!.onclick = () => {
     document.getElementById("filesystembutton")?.classList.remove("panelselected")
+    document.getElementById("photosbutton")?.classList.remove("panelselected")
     document.getElementById("filesharingbutton")?.classList.add("panelselected")
     EventsEmit("getapps")
+}
+
+document.getElementById("photosbutton")!.onclick = () => {
+    document.getElementById("filesystembutton")?.classList.remove("panelselected")
+    document.getElementById("filesharingbutton")?.classList.remove("panelselected")
+    document.getElementById("photosbutton")?.classList.add("panelselected")
+    EventsEmit("getphotos")
 }

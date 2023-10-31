@@ -88,6 +88,11 @@ func eventRegister(ctx context.Context, completepath []string, sharingapps []ins
 			getFiles(afcconnection, ctx, completepath)
 		}
 	})
+	runtime.EventsOn(ctx, "getphotos", func(optionalData ...interface{}) {
+		completepath = []string{}
+		completepath = completePathEdit(completepath, "DCIM/100APPLE")
+		getFiles(afcconnection, ctx, completepath, true)
+	})
 	runtime.EventsOn(ctx, "copyto", func(optionalData ...interface{}) {
 		if filesharingapps {
 			copyIos(housearrestconnection, ctx, completepath, optionalData...)
@@ -164,12 +169,12 @@ func completePathEdit(completepath []string, path string) []string {
 	return completepath
 }
 
-func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string) {
+func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string, photomode ...bool) {
+	if len(photomode) < 1 {
+		photomode = append(photomode, false)
+	}
 	runtime.EventsEmit(ctx, "clearpage")
 	files, err := afcconnection.ListFiles(pathToString(completepath), "*")
-	//fmt.Print(files)
-	//fmt.Printf(pathToString(completepath))
-	//fmt.Print(completepath)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
@@ -180,6 +185,8 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath [
 		if err != nil {
 			continue
 		} else if f == "." {
+			continue
+		} else if photomode[0] && f == ".." {
 			continue
 		}
 		_, fileextension, _ := strings.Cut(f, ".")
