@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
+	"mime"
+	"os"
 	"path"
 	"strings"
 	"sync"
@@ -24,6 +26,7 @@ const (
 	Directory int = 0
 	File      int = 1
 	Iosapp    int = 2
+	Media     int = 3
 )
 
 // App struct
@@ -39,6 +42,7 @@ func NewApp() *App {
 // Greet returns a greeting for the given name
 func (a *App) newAfc(ctx context.Context, afcconnection *afc.Connection, idevice ios.DeviceEntry) {
 	completepath := []string{}
+	mime.AddExtensionType(".HEIC", "image")
 	iosproxy, err := installationproxy.New(idevice)
 	if err != nil {
 		fmt.Printf(err.Error())
@@ -163,16 +167,26 @@ func completePathEdit(completepath []string, path string) []string {
 func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath []string) {
 	runtime.EventsEmit(ctx, "clearpage")
 	files, err := afcconnection.ListFiles(pathToString(completepath), "*")
-	fmt.Print(files)
+	//fmt.Print(files)
+	//fmt.Printf(pathToString(completepath))
+	//fmt.Print(completepath)
 	if err != nil {
 		fmt.Printf(err.Error())
 		return
 	}
+	fmt.Printf(mime.TypeByExtension(".HEIC") + "HDIZEGHDFIZEG")
 	for _, f := range files {
 		stat, err := afcconnection.Stat(pathToString(completepath) + f)
 		if err != nil {
 			continue
 		} else if f == "." {
+			continue
+		}
+		_, fileextension, _ := strings.Cut(f, ".")
+		fileextension = "." + fileextension
+		if pathToString(completepath) == "DCIM/100APPLE/" && strings.Contains(mime.TypeByExtension(fileextension), "image") || strings.Contains(mime.TypeByExtension(fileextension), "video") {
+			loadPhotosThumbnails(f, afcconnection)
+			runtime.EventsEmit(ctx, "pathlist", f, Media, "")
 			continue
 		}
 		if stat.IsDir() {
@@ -183,6 +197,29 @@ func getFiles(afcconnection *afc.Connection, ctx context.Context, completepath [
 	}
 }
 
+func loadPhotosThumbnails(photo string, afcconnection *afc.Connection) {
+	const thumbnailspath = "PhotoData/Thumbnails/V2/DCIM/100APPLE/"
+	const savepath = "images/photosthumbnails"
+	var thumbnailsname = path.Join(savepath, photo+".jpg")
+	_, err := os.Stat(thumbnailsname)
+	if err == nil {
+		return
+	}
+	files, err := afcconnection.ListFiles(path.Join(thumbnailspath, photo), "*.JPG")
+	if err != nil {
+		fmt.Printf(err.Error())
+		return
+	}
+	if len(files) > 0 {
+		fmt.Print(path.Join(thumbnailspath, photo, files[0]))
+		err := afcconnection.Pull(path.Join(thumbnailspath, photo, files[0]), thumbnailsname)
+		if err != nil {
+			fmt.Printf(err.Error())
+		}
+	}
+
+}
+
 func (a *App) shutdown(ctx context.Context, afcconnection *afc.Connection) {
 	if afcconnection != nil {
 		afcconnection.Close()
@@ -191,5 +228,5 @@ func (a *App) shutdown(ctx context.Context, afcconnection *afc.Connection) {
 }
 
 func pathToString(completepath []string) string {
-	return strings.Join(completepath, "/")
+	return strings.Join(completepath, "")
 }

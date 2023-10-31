@@ -1,11 +1,12 @@
 #folder-div {
     display: grid;
-    width: 83px;
-    height: 121px;
+    min-width: 83px;
+    min-height: 121px;
     margin-right: 11px;
     margin-left: 11px;
     margin-top: 14px;
     justify-content: center;
+    align-items: center;
 }
 
 #folder-div:hover {
@@ -27,6 +28,7 @@ p {
 
 #dirflex {
     display: flex;
+    flex: 1;
     flex-wrap: wrap;
 }
 
@@ -38,8 +40,7 @@ html body {
 
 img {
     pointer-events: none;
-    width: 67px;
-    height: 67px;
+    max-width: 67px;
 }
 
 .selected {

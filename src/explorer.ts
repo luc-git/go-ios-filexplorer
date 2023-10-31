@@ -35,6 +35,12 @@ function addpath(path: string, pathtype: number, appid: string) {
             img.src = "../images/filesharingapps/" + path + ".png"
             folderdiv.setAttribute("appid", appid)
             break;
+        case 3:
+            img.src = "../images/photosthumbnails/" + path + ".jpg"
+            img.onerror = () => {
+                img.src = "../images/file-earmark.svg"
+            }
+            break;
     }
 
     folderdiv.appendChild(img)
